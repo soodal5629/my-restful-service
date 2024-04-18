@@ -41,4 +41,14 @@ public class UserController {
         // http status code: 201
         return ResponseEntity.created(location).build();
     }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity deleteUser(@PathVariable Integer id) {
+        User deletedUser = userService.deleteById(id);
+        if(deletedUser == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        }
+
+        return ResponseEntity.noContent().build(); // status code: 204(No Content)
+    }
 }
