@@ -3,8 +3,10 @@ package com.example.myrestfulservice.controller;
 import com.example.myrestfulservice.bean.User;
 import com.example.myrestfulservice.dao.UserDaoService;
 import com.example.myrestfulservice.exception.UserNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -31,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User savedUser = userService.save(user);
         // response 헤더에 key: location으로 생성된 user 상세보기 uri 를 담아서 보낼 수 있음
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
