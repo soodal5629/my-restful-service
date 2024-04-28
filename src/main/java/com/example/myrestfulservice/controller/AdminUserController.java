@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,6 +37,27 @@ public class AdminUserController {
         // 필터 -> AdminUser에 적용
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
         MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+        return mapping;
+    }
+
+    @GetMapping("/users")
+    public MappingJacksonValue retrieveAllUsers4Admin() {
+        List<User> users = userService.findAll();
+        List<AdminUser> adminUsers = new ArrayList<>();
+        for (User user : users) {
+            AdminUser adminUser = new AdminUser();
+            BeanUtils.copyProperties(user, adminUser);
+            adminUsers.add(adminUser);
+        }
+
+        // json 필터 적용
+        // User 객체와 다르게 AdminUser는 response에 ssn 필드 보여주도록 필터 추가
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name"
+                , "joinDate", "ssn");
+        // 필터 -> AdminUser에 적용
+        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUsers);
         mapping.setFilters(filters);
         return mapping;
     }
