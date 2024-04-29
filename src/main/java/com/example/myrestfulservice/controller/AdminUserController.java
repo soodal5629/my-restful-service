@@ -1,6 +1,7 @@
 package com.example.myrestfulservice.controller;
 
 import com.example.myrestfulservice.bean.AdminUser;
+import com.example.myrestfulservice.bean.AdminUserV2;
 import com.example.myrestfulservice.bean.User;
 import com.example.myrestfulservice.dao.UserDaoService;
 import com.example.myrestfulservice.exception.UserNotFoundException;
@@ -21,7 +22,7 @@ import java.util.List;
 public class AdminUserController {
     private final UserDaoService userService;
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/v1/users/{id}")
     public MappingJacksonValue retrieveUser4Admin(@PathVariable int id) {
         User user = userService.findOne(id);
         AdminUser adminUser = new AdminUser();
@@ -36,6 +37,27 @@ public class AdminUserController {
                 , "joinDate", "ssn");
         // 필터 -> AdminUser에 적용
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
+        MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
+        mapping.setFilters(filters);
+        return mapping;
+    }
+
+    @GetMapping("/v2/users/{id}")
+    public MappingJacksonValue retrieveUser4AdminV2(@PathVariable int id) {
+        User user = userService.findOne(id);
+        AdminUserV2 adminUser = new AdminUserV2();
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        } else {
+            BeanUtils.copyProperties(user, adminUser);
+            adminUser.setGrade("VIP");
+        }
+        // json 필터 적용
+        // User 객체와 다르게 AdminUser는 response에 ssn 필드 보여주도록 필터 추가
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "name"
+                , "joinDate", "grade");
+        // 필터 -> AdminUser에 적용
+        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
         MappingJacksonValue mapping = new MappingJacksonValue(adminUser);
         mapping.setFilters(filters);
         return mapping;
