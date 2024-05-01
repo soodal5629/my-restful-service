@@ -22,7 +22,8 @@ import java.util.List;
 public class AdminUserController {
     private final UserDaoService userService;
 
-    @GetMapping("/v1/users/{id}")
+    //@GetMapping("/v1/users/{id}")
+    @GetMapping(value = "/users/{id}", params = "version=1")
     public MappingJacksonValue retrieveUser4Admin(@PathVariable int id) {
         User user = userService.findOne(id);
         AdminUser adminUser = new AdminUser();
@@ -42,7 +43,8 @@ public class AdminUserController {
         return mapping;
     }
 
-    @GetMapping("/v2/users/{id}")
+    //@GetMapping("/v2/users/{id}")
+    @GetMapping(value = "/users/{id}", params = "version=2")
     public MappingJacksonValue retrieveUser4AdminV2(@PathVariable int id) {
         User user = userService.findOne(id);
         AdminUserV2 adminUser = new AdminUserV2();
