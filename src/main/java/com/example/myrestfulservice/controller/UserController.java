@@ -3,6 +3,11 @@ package com.example.myrestfulservice.controller;
 import com.example.myrestfulservice.bean.User;
 import com.example.myrestfulservice.dao.UserDaoService;
 import com.example.myrestfulservice.exception.UserNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -20,6 +25,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
+// 클래스 설명
+@Tag(name = "user-controller", description = "일반 사용자 서비스를 위한 컨트롤러")
 public class UserController {
     private final UserDaoService userService;
 
@@ -28,8 +35,18 @@ public class UserController {
         return userService.findAll();
     }
 
+    // 컨트롤러에서 HTTP 메소드 설명
+    @Operation(summary = "사용자 정보 조회 API", description = "사용자 ID를 이용해서 사용자 상세 정보 조회를 합니다.")
+    // API 에서의 작업 처리에 대한 응답코드 설명
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK!!"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST!"),
+            @ApiResponse(responseCode = "404", description = "USER NOT FOUND!"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR!")
+    })
     @GetMapping("/users/{id}")
-    public EntityModel<User> retrieveUser(@PathVariable int id) {
+    public EntityModel<User> retrieveUser(@Parameter(description = "사용자 ID", required = true, example = "1")
+                                              @PathVariable int id) {
         User user = userService.findOne(id);
         if (user == null) {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
