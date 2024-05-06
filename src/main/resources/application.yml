@@ -10,3 +10,8 @@ management:
       exposure:
           # 사실 보안상 이렇게 *을 해주는 것보다는 필요한 것들만 지정하는 것이 좋다.
           include: "*"
+#spring:
+#  security:
+#    user:
+#      name: username
+#      password: password
