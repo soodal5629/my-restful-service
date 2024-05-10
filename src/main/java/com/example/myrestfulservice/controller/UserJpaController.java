@@ -1,5 +1,6 @@
 package com.example.myrestfulservice.controller;
 
+import com.example.myrestfulservice.bean.Post;
 import com.example.myrestfulservice.bean.User;
 import com.example.myrestfulservice.exception.UserNotFoundException;
 import com.example.myrestfulservice.repository.UserRepository;
@@ -66,5 +67,14 @@ public class UserJpaController {
                 .toUri();
         // http status code: 201
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("/users/{id}/posts")
+    public List<Post> retrieveAllPostsByUser(@PathVariable Integer id) {
+        Optional<User> user = userRepository.findById(id);
+        if(!user.isPresent()) {
+            throw new UserNotFoundException("id-" + id);
+        }
+        return user.get().getPosts();
     }
 }
