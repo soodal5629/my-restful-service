@@ -3,6 +3,7 @@ package com.example.myrestfulservice.controller;
 import com.example.myrestfulservice.bean.Post;
 import com.example.myrestfulservice.bean.User;
 import com.example.myrestfulservice.exception.UserNotFoundException;
+import com.example.myrestfulservice.repository.PostRepository;
 import com.example.myrestfulservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -27,7 +28,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 public class UserJpaController {
     private final UserRepository userRepository;
-
+    private final PostRepository postRepository;
     @GetMapping("/users")
     public ResponseEntity retrieveAllUsers() {
         Map<String, Object> map = new HashMap<>();
@@ -77,4 +78,22 @@ public class UserJpaController {
         }
         return user.get().getPosts();
     }
+
+    @PostMapping("/users/{id}/posts")
+    public ResponseEntity createPost(@PathVariable Integer id, @RequestBody Post post) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if(!userOptional.isPresent()) {
+            throw new UserNotFoundException("id-"+id);
+        }
+        User user = userOptional.get();
+        post.setUser(user);
+        postRepository.save(post);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(post.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
+    }
+
 }
