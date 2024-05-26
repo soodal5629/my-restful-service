@@ -14,6 +14,7 @@ public class Post {
     private String description;
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
+    @JoinColumn(name = "USER_ID")
     //@JoinColumn(updatable = false, insertable = false) --> 이거 주석 풀면 user_id에 null이 들어감
     private User user;
 

@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -24,6 +25,7 @@ import java.util.List;
 public class User {
     @Schema(title = "사용자 ID", description = "사용자 ID는 자동 생성됩니다.")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USER_ID")
     private Integer id;
     @Schema(title = "사용자 이름", description = "사용자 이름을 입력합니다.")
     @Size(min = 2, message = "name은 2글자 이상 입력해 주세요.")
@@ -38,7 +40,7 @@ public class User {
     @Schema(title = "사용자 주민번호", description = "사용자 주민번호를 입력합니다.")
     private String ssn;
     @OneToMany(mappedBy = "user")
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
     public User(Integer id, String name, LocalDateTime joinDate, String password, String ssn) {
         this.id = id;
